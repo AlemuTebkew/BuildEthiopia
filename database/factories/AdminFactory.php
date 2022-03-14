@@ -23,6 +23,7 @@ class AdminFactory extends Factory
                 'last_name'=>'Alem',
                 'password'=> Hash::make('1234'),
                 'role_id'=>1,
+                'phone_no'=>'0938232169',
                 'email'=>'alemteb1010@gmail.com',
 
         ];

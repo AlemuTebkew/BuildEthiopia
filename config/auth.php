@@ -95,6 +95,9 @@ return [
         ],
     ],
 
+    'verification'=>[
+        'expire'=>120,
+    ],
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout

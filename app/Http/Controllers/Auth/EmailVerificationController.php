@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Employee;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Traits\ApiMessage;
+use App\Models\Admin;
+use App\Traits\ApiMessage;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Verified;
@@ -25,12 +26,17 @@ class EmailVerificationController extends Controller
 
     public function verify(Request $request)
     {
+        // if (!$request->hasValidSignature()) {
+        //     return response()->json(["msg" => "Invalid/Expired url provided."], 401);
+        // }
 
-        if (! hash_equals((string) $request->route('id'), (string) $request->user()->getKey())) {
+        //  return $request->route('id');
+       return $user= Admin::find(1);
+        if (! hash_equals((string) $request->route('id'), (string) $user->getKey())) {
             throw new AuthorizationException;
         }
 
-        if (! hash_equals((string) $request->route('hash'), sha1($request->user()->getEmailForVerification()))) {
+        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
             throw new AuthorizationException;
         }
 
@@ -44,6 +50,20 @@ class EmailVerificationController extends Controller
         }
 
         return $this->sendResponse('Email has been verified','');
+
+        //  $user=Admin::findOrFail(request('id'));
+
+        //   if (! $user->hasVerifiedEmail()) {
+
+        //      $user->markEmailAsVerified();
+        //      event(new Verified(request()->user()));
+
+        //      return request()->wantsJson() ? response()->json() :
+        //                                     redirect(url(env('FRONTEND_URL')).'/dashboard?verified=1');
+        // }
+
+        // return request()->wantsJson() ? response()->json() :
+        //             redirect(url(env('FRONTEND_URL')).'/dashboard?verified=1');
 
     }
 

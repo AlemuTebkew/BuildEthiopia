@@ -13,11 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('zones', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name',20);
-            $table->text('damage_info');
-            $table->foreignId('region_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zones');
+        Schema::dropIfExists('roles');
     }
 };

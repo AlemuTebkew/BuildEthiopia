@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Zone;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\Controller;
 class ZoneController extends Controller
 {
     /**
@@ -14,7 +14,8 @@ class ZoneController extends Controller
      */
     public function index()
     {
-        //
+      //  $per_page=request('per_page') ?? 20;
+        return Zone::with('region')->get();
     }
 
     /**
@@ -25,7 +26,16 @@ class ZoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'=>'required',
+            'damaged_info'=>'required',
+            'region_id'=>'required'
+        ]);
+
+       $zone= Zone::create($request->all());
+
+       return response()->json($zone->load('region'),201);
+
     }
 
     /**
@@ -48,7 +58,15 @@ class ZoneController extends Controller
      */
     public function update(Request $request, Zone $zone)
     {
-        //
+        $request->validate([
+            'name'=>'required',
+            'damaged_info'=>'required',
+            'region_id'=>'required'
+        ]);
+
+       $zone->update($request->all());
+
+       return response()->json($zone->load('region'),200);
     }
 
     /**
@@ -59,6 +77,7 @@ class ZoneController extends Controller
      */
     public function destroy(Zone $zone)
     {
-        //
+        $zone->delete();
+        return response()->json('successfully deleted',200);
     }
 }

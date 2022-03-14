@@ -43,9 +43,20 @@ class VerifyEmailNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $params=[
+            'id' => $notifiable->getKey(),
+            'hash' => sha1($notifiable->getEmailForVerification()),
+         ];
+
+         $url=env('FRONTEND_URL').'/verify?';
+         foreach($params as $key=>$param){
+            $url.="{$key}={$param}&";
+         }
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
+                    ->line('Verify Your Email Please!!!!!.')
+                    ->action('Notification Action', $url)
+                    // ->action('Notification Action', $this->verificationUrl($notifiable))
                     ->line('Thank you for using our application!');
     }
 
@@ -64,7 +75,20 @@ class VerifyEmailNotification extends Notification
         );
 
              // I use urlencode to pass a link to my frontend.
-             return $prefix . urlencode($temporarySignedURL);
+            //  return $prefix . urlencode($temporarySignedURL);
+             return $prefix.urlencode($temporarySignedURL);
+
+
+            //  $params=[
+            //     'id' => $notifiable->getKey(),
+            //     'hash' => sha1($notifiable->getEmailForVerification()),
+            //  ];
+
+            //  $url=env('FRONTEND_URL'.'/verify?');
+            //  foreach($params as $key=>$param){
+            //     $url.="{$key}={$param}&";
+            //  }
+
     }
 
 }

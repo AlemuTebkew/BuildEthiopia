@@ -4,7 +4,7 @@ namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InstitutionPostResource extends JsonResource
+class NewsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,7 @@ class InstitutionPostResource extends JsonResource
     {
         return [
             'title'=>$this->title,
-            'type'=>$this->type,
             'description'=>$this->description,
-            'woreda'=>$this->woreda?? null,
-            'kebele'=>$this->kebele?? null,
-            'zone'=>$this->zone?? null,
-            'posted_by'=>$this->poster?? null,
             'images'=>$this->images ?? null,
         ];
     }

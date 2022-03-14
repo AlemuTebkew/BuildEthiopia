@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('kebele')->nullable();
             $table->text('description');
             $table->foreignId('zone_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('posted_by')->constrained('Admin','id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('posted_by')->constrained('admins','id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

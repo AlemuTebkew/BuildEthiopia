@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 
 class UserController extends Controller
 {
@@ -16,7 +17,8 @@ class UserController extends Controller
     public function index()
     {
         $per_page=request('per_page') ?? 10;
-        return User::paginate($per_page);
+        $role_id=request()->user()->role_id;
+        return Admin::where('role_id','!=',$role_id)->paginate($per_page);
     }
 
     /**
@@ -32,8 +34,19 @@ class UserController extends Controller
             'last_name'=>'required',
             'email'=>'required',
             'phone_no'=>'required',
-            'role_id'=>'required'
         ]);
+
+        $data=$request->all();
+        $data['role_id']=2;
+        $admin= Admin::create($data);
+
+        $admin=Admin::find(2);
+              $admin->sendEmailVerificationNotification();
+
+        return $admin;
+
+        return response()->json('sucessfully saved',201);
+
     }
 
     /**

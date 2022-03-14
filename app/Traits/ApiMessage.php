@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Traits;
+namespace App\Traits;
 trait ApiMessage{
 
 
@@ -16,7 +16,7 @@ trait ApiMessage{
                 'data'    => $result,
                 'message' => $message,
             ];
-         
+
             return response()->json($result, 200);
         }
 

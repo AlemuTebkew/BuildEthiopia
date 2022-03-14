@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Admin\InstitutionPostResource;
-use App\Models\Image;
-use App\Models\InstitutionPost;
-use Illuminate\Http\Request;
-use App\ReusedModule;
+use App\Http\Resources\Admin\NewsResource;
+use App\Models\News;
 use App\ReusedModule\ImageUpload;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class InstitutionPostController extends Controller
+class SuccessStoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,7 +19,7 @@ class InstitutionPostController extends Controller
     public function index()
     {
         $per_page=request('per_page') ?? 10;
-        return  InstitutionPostResource::collection(InstitutionPost::paginate($per_page));
+        return  NewsResource::collection(News::paginate($per_page));
     }
 
     /**
@@ -34,20 +32,15 @@ class InstitutionPostController extends Controller
     {
         $request->validate([
             'title'=>'required',
-            'type'=>'required',
             'description'=>'required'
         ]);
 
-        $data=$request->except('images');
-        $data['posted_by']=$request->user()->id;
-        $post=InstitutionPost::create($data);
+       $news= News::create($request->all());
 
         //calling image upload method from php class
         $iu=new ImageUpload();
-        $iu->multipleImageUpload($request->images,$post->id);
-
-      return response()->json('sucessfully saved',201);
-
+        $iu->multipleImageUpload($request->images,$news->id);
+        return response()->json($news,201);
 
     }
 
@@ -73,16 +66,15 @@ class InstitutionPostController extends Controller
     {
         $request->validate([
             'title'=>'required',
-            'type'=>'required',
             'description'=>'required'
         ]);
 
         // $data=$request->except('images');
         // $data['posted_by']=$request->user()->id;
-        $post=InstitutionPost::find($id);
+        $post=News::find($id);
         $post->update($request->all());
 
-      return response()->json('sucessfully saved',200);
+      return response()->json($post,200);
     }
 
     /**
@@ -93,7 +85,7 @@ class InstitutionPostController extends Controller
      */
     public function destroy($id)
     {
-        $post= InstitutionPost::find($id);
+        $post= News::find($id);
         $path= public_path('/images');
         foreach ($post->images as $image) {
             if($image->path && file_exists($path.$image->path)){
@@ -106,29 +98,6 @@ class InstitutionPostController extends Controller
         }
 
         $post->delete();
-        return response()->json('sucessfully saved',200);
-
-    }
-
-    public function deleteImage($id){
-
-        $image=Image::find($id);
-        $path= public_path('/images');
-
-        if($image->path && file_exists($path.$image->path)){
-            Storage::delete($path.$image->path);
-           // unlink($path.$category->image);
-        }
-
-        $image->delete();
-        return response()->json('sucessfully saved',200);
-
-
-    }
-
-    public function updateImage(Request $request){
-        $iu=new ImageUpload();
-        $iu->multipleImageUpload($request->images,$request->id);
         return response()->json('sucessfully saved',200);
 
     }
