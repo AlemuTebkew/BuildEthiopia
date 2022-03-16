@@ -46,7 +46,7 @@ class InstitutionPostController extends Controller
         $iu=new ImageUpload();
         $iu->multipleImageUpload($request->images,$post->id);
 
-      return response()->json('sucessfully saved',201);
+      return response()->json($post,201);
 
 
     }
@@ -57,9 +57,9 @@ class InstitutionPostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(InstitutionPost $institutionPost)
     {
-        //
+        return response()->json($institutionPost,200);
     }
 
     /**

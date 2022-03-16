@@ -26,12 +26,17 @@ class EmailVerificationController extends Controller
 
     public function verify(Request $request)
     {
-        // if (!$request->hasValidSignature()) {
-        //     return response()->json(["msg" => "Invalid/Expired url provided."], 401);
-        // }
+        if (!$request->hasValidSignature(false)) {
+            return response()->json(["msg" => "Invalid/Expired url provided."], 401);
+        }
 
         //  return $request->route('id');
-       return $user= Admin::find(1);
+        $user= Admin::find($request->id);
+
+        if(! $user){
+            return response()->json(["msg" => "no id provided."], 401);
+
+        }
         if (! hash_equals((string) $request->route('id'), (string) $user->getKey())) {
             throw new AuthorizationException;
         }
@@ -40,30 +45,32 @@ class EmailVerificationController extends Controller
             throw new AuthorizationException;
         }
 
-        if ($request->user()->hasVerifiedEmail()) {
+
+        if ($user->hasVerifiedEmail()) {
             return $this->sendError('Already Verified','');
 
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
-        }
+        // if ($request->user()->markEmailAsVerified()) {
+        //     event(new Verified($request->user()));
+        // }
 
-        return $this->sendResponse('Email has been verified','');
+        // return $this->sendResponse('Email has been verified','');
 
         //  $user=Admin::findOrFail(request('id'));
 
-        //   if (! $user->hasVerifiedEmail()) {
+          if ($user->markEmailAsVerified()) {
 
-        //      $user->markEmailAsVerified();
-        //      event(new Verified(request()->user()));
+            //  $user->markEmailAsVerified();
+             event(new Verified($user));
 
-        //      return request()->wantsJson() ? response()->json() :
-        //                                     redirect(url(env('FRONTEND_URL')).'/dashboard?verified=1');
-        // }
+           // return  response()->json('verified',200) ;
+                    //  return redirect(url(env('FRONTEND_URL')).'/login');
+        }
+      //  return  response()->json('verified',200) ;
 
         // return request()->wantsJson() ? response()->json() :
-        //             redirect(url(env('FRONTEND_URL')).'/dashboard?verified=1');
+        return redirect(url(env('FRONTEND_URL')).'/login');
 
     }
 

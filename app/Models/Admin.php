@@ -48,15 +48,18 @@ class Admin extends Authenticatable implements MustVerifyEmail
     ];
 
 
-    public function sendPasswordResetNotification($token)
-    {
-        $url = 'https://127.0.0.1/reset-password?token='.$token;
-        $this->notify(new NewPasswordNotification($url));
+    public function role(){
+        return $this->belongsTo(Role::class);
     }
+    // public function sendPasswordResetNotification($token)
+    // {
+    //     $url = 'https://127.0.0.1/reset-password?token='.$token;
+    //     $this->notify(new NewPasswordNotification($url));
+    // }
 
-    public function sendEmailVerificationNotification()
-    {
-        $this->notify(new VerifyEmailNotification());
-    }
+    // public function sendEmailVerificationNotification()
+    // {
+    //     $this->notify(new VerifyEmailNotification());
+    // }
 
 }

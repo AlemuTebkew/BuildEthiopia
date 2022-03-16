@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -43,19 +44,19 @@ class VerifyEmailNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $params=[
-            'id' => $notifiable->getKey(),
-            'hash' => sha1($notifiable->getEmailForVerification()),
-         ];
+        // $params=[
+        //     'id' => $notifiable->getKey(),
+        //     'hash' => sha1($notifiable->getEmailForVerification()),
+        //  ];
 
-         $url=env('FRONTEND_URL').'/verify?';
-         foreach($params as $key=>$param){
-            $url.="{$key}={$param}&";
-         }
+        //  $url=env('FRONTEND_URL').'?';
+        //  foreach($params as $key=>$param){
+        //     $url.="{$key}={$param}&";
+        //  }
 
         return (new MailMessage)
                     ->line('Verify Your Email Please!!!!!.')
-                    ->action('Notification Action', $url)
+                    ->action('Notification Action', $this->verificationUrl($notifiable))
                     // ->action('Notification Action', $this->verificationUrl($notifiable))
                     ->line('Thank you for using our application!');
     }
@@ -64,30 +65,17 @@ class VerifyEmailNotification extends Notification
         // if (static::$createUrlCallback) {
         //     return call_user_func(static::$createUrlCallback, $notifiable);
         // }
-        $prefix = config('frontend.url') . config('frontend.email_verify_url');
-         $temporarySignedURL= URL::temporarySignedRoute(
-            'verification.verify',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
-        );
-
-             // I use urlencode to pass a link to my frontend.
-            //  return $prefix . urlencode($temporarySignedURL);
-             return $prefix.urlencode($temporarySignedURL);
+        // $prefix = config('frontend.url') . config('frontend.email_verify_url');
+        //  $temporarySignedURL= URL::temporarySignedRoute(
+        //     'verification.verify',
+        //     Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+        //     [
+        //         'id' => $notifiable->getKey(),
+        //         'hash' => sha1($notifiable->getEmailForVerification()),
+        //     ]
+        // );
 
 
-            //  $params=[
-            //     'id' => $notifiable->getKey(),
-            //     'hash' => sha1($notifiable->getEmailForVerification()),
-            //  ];
-
-            //  $url=env('FRONTEND_URL'.'/verify?');
-            //  foreach($params as $key=>$param){
-            //     $url.="{$key}={$param}&";
-            //  }
 
     }
 

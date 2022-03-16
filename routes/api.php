@@ -5,7 +5,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Models\InstitutionPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,20 +28,22 @@ Route::middleware('auth:sanctum','verified')->get('/user', function (Request $re
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/send_verification',[EmailVerificationController::class,'sendVerificationEmail'])->name('verification.send');
-    Route::post('/resend',[EmailVerificationController::class,'resend']);
+   // Route::post('/send_verification',[EmailVerificationController::class,'sendVerificationEmail'])->name('verification.send');
+    //Route::post('/resend',[EmailVerificationController::class,'resend']);
     Route::post('/logout',[LoginController::class,'logout']);
+
+    Route::apiResource('/users',UserController::class);
 });
-Route::post('/verify',[EmailVerificationController::class,'verify'])
+Route::get('/verify',[EmailVerificationController::class,'verify'])
                               ->name('verification.verify')
-                            //   ->middleware('signed')
+                            //  ->middleware('signed')
                               ;
 
 Route::post('/login',[LoginController::class,'login']);
 Route::post('/forgot',[ForgotPasswordController::class,'forgot']);
-Route::post('/reset',[ForgotPasswordController::class,'reset']);
+Route::post('/reset/{token}',[ResetPasswordController::class,'resetPassword']);
 
 Route::apiResource('/posts',InstitutionPostController::class);
-Route::apiResource('/users',UserController::class);
+
 Route::apiResource('/regions',RegionController::class);
 Route::apiResource('/zones',ZoneController::class);

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -16,9 +17,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $per_page=request('per_page') ?? 10;
+        // $per_page=request('per_page') ?? 10;
         $role_id=request()->user()->role_id;
-        return Admin::where('role_id','!=',$role_id)->paginate($per_page);
+        return Admin::where('role_id','!=',$role_id)->get();
     }
 
     /**
@@ -38,14 +39,15 @@ class UserController extends Controller
 
         $data=$request->all();
         $data['role_id']=2;
+        $data['password']=Hash::make($request->last_name.'1234');
         $admin= Admin::create($data);
 
-        $admin=Admin::find(2);
-              $admin->sendEmailVerificationNotification();
+    //    $admin=Admin::find(2);
+        $admin->sendEmailVerificationNotification();
 
-        return $admin;
+      //  return $admin;
 
-        return response()->json('sucessfully saved',201);
+        return response()->json($admin,201);
 
     }
 

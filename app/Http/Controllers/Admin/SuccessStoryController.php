@@ -50,9 +50,9 @@ class SuccessStoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(News $new)
     {
-        //
+        return response()->json($new,200);
     }
 
     /**
