@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\InstitutionPostResource;
 use App\Models\Image;
 use App\Models\InstitutionPost;
+use App\Models\Region;
 use Illuminate\Http\Request;
 use App\ReusedModule;
 use App\ReusedModule\ImageUpload;
@@ -18,10 +19,23 @@ class InstitutionPostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
     {
         $per_page=request('per_page') ?? 10;
-        return  InstitutionPostResource::collection(InstitutionPost::paginate($per_page));
+        $post_query=InstitutionPost::query();
+       $posts= $post_query->where('type',request('type'))
+        ->when(request('zone'),function($query){
+               $query->where('zone_id',request('zone'));
+        })
+        ->when(request()->filled('region'),function($query){
+            $region=Region::find(request('region'));
+            $zones=$region->zones->pluck('id');
+           // return $zones;
+            $query->whereIn('zone_id',$zones);
+     })
+        ;
+        return  InstitutionPostResource::collection($posts->with(['images','zone','postedBy'])->paginate($per_page));
     }
 
     /**
@@ -32,21 +46,32 @@ class InstitutionPostController extends Controller
      */
     public function store(Request $request)
     {
+
+
+       // return  $data=$request->all();
+
         $request->validate([
             'title'=>'required',
             'type'=>'required',
-            'description'=>'required'
+            'description'=>'required',
+            'images'=>'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+
         ]);
 
-        $data=$request->except('images');
+        $data=$request->all();
         $data['posted_by']=$request->user()->id;
         $post=InstitutionPost::create($data);
 
         //calling image upload method from php class
-        $iu=new ImageUpload();
-        $iu->multipleImageUpload($request->images,$post->id);
 
-      return response()->json($post,201);
+        $iu=new ImageUpload();
+        $upload= $iu->multipleImageUpload($request->images,$post->id);
+       if (count($upload) > 0) {
+        return response()->json(new InstitutionPostResource($post->load('images')),201);
+       }else{
+        return response()->json('error while uploading..',401);
+       }
 
 
     }
@@ -77,12 +102,11 @@ class InstitutionPostController extends Controller
             'description'=>'required'
         ]);
 
-        // $data=$request->except('images');
-        // $data['posted_by']=$request->user()->id;
-        $post=InstitutionPost::find($id);
-        $post->update($request->all());
+         $data=$request->all();
+         $post=InstitutionPost::find($id);
+         $post->update($data);
 
-      return response()->json('sucessfully saved',200);
+        return response()->json(new InstitutionPostResource($post->load('images')),200);
     }
 
     /**
@@ -94,11 +118,14 @@ class InstitutionPostController extends Controller
     public function destroy($id)
     {
         $post= InstitutionPost::find($id);
-        $path= public_path('/images');
+        $path= public_path().'/images/';
+    //    return $post->images;
         foreach ($post->images as $image) {
+
             if($image->path && file_exists($path.$image->path)){
-                Storage::delete($path.$image->path);
-               // unlink($path.$category->image);
+              //  return $image->path;
+               // Storage::delete('images/'.$image->path);
+                unlink($path.$image->path);
             }
 
             $image->delete();
@@ -106,30 +133,39 @@ class InstitutionPostController extends Controller
         }
 
         $post->delete();
-        return response()->json('sucessfully saved',200);
+        return response()->json('sucessfully delete',200);
 
     }
 
     public function deleteImage($id){
 
         $image=Image::find($id);
-        $path= public_path('/images');
+        $path= public_path().'/images/';
 
+     //   return $path.$image->path;
         if($image->path && file_exists($path.$image->path)){
-            Storage::delete($path.$image->path);
-           // unlink($path.$category->image);
+         // return true;
+             //Storage::delete('images/'.$image->path);
+             unlink($path.$image->path);
         }
 
         $image->delete();
-        return response()->json('sucessfully saved',200);
+        return response()->json('sucessfully deleted',200);
 
 
     }
 
     public function updateImage(Request $request){
         $iu=new ImageUpload();
-        $iu->multipleImageUpload($request->images,$request->id);
-        return response()->json('sucessfully saved',200);
+        $upload= $iu->multipleImageUpload($request->images,$request->post_id);
+        if (count($upload) > 0) {
+            return response()->json($upload,201);
+        }else{
+            return response()->json('error while uploading',401);
+
+        }
 
     }
+
+
 }

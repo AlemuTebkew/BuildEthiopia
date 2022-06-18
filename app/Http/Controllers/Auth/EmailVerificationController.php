@@ -37,17 +37,19 @@ class EmailVerificationController extends Controller
             return response()->json(["msg" => "no id provided."], 401);
 
         }
-        if (! hash_equals((string) $request->route('id'), (string) $user->getKey())) {
+        if (! hash_equals((string) $request->id, (string) $user->getKey())) {
             throw new AuthorizationException;
         }
 
-        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+        if (! hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
             throw new AuthorizationException;
         }
 
 
         if ($user->hasVerifiedEmail()) {
-            return $this->sendError('Already Verified','');
+            return redirect(url(env('FRONTEND_URL')).'/login');
+
+            // return $this->sendError('Already Verified','');
 
         }
 

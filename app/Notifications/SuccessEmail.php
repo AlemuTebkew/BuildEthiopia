@@ -41,9 +41,9 @@ class SuccessEmail extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('BuildGeneration : Success')
+            ->line('Successfully reset your password.')
+            ->line('Thank you.');
     }
 
     /**

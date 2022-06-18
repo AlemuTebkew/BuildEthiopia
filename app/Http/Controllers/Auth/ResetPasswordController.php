@@ -15,7 +15,7 @@ class ResetPasswordController extends Controller
     public function resetPassword(Request $request,$token){
             //Validate input
             $validator = Validator::make($request->all(), [
-                'email' => 'required|email|exists:admins,email',
+               // 'email' => 'required|email|exists:admins,email',
                 'password' => 'required',
                // 'token' => 'required'
             ]);

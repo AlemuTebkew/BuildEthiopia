@@ -15,9 +15,10 @@ class NewsResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'=>$this->id,
             'title'=>$this->title,
             'description'=>$this->description,
-            'images'=>$this->images ?? null,
+            'images'=> ImageResource::collection($this->images) ?? null,
         ];
     }
 }

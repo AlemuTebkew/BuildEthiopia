@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\NewsResource;
+use App\Models\Image;
 use App\Models\News;
+use App\Models\NewsImage;
 use App\ReusedModule\ImageUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -32,15 +34,21 @@ class SuccessStoryController extends Controller
     {
         $request->validate([
             'title'=>'required',
-            'description'=>'required'
+            'description'=>'required',
+            'images'=>'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
        $news= News::create($request->all());
 
         //calling image upload method from php class
         $iu=new ImageUpload();
-        $iu->multipleImageUpload($request->images,$news->id);
-        return response()->json($news,201);
+        $upload=$iu->newsMultipleImageUpload($request->images,$news->id);
+        if (count($upload) > 0) {
+            return response()->json(new NewsResource($news->load('images')),201);
+           }else{
+            return response()->json('error while uploading..',401);
+           }
 
     }
 
@@ -69,8 +77,6 @@ class SuccessStoryController extends Controller
             'description'=>'required'
         ]);
 
-        // $data=$request->except('images');
-        // $data['posted_by']=$request->user()->id;
         $post=News::find($id);
         $post->update($request->all());
 
@@ -85,20 +91,48 @@ class SuccessStoryController extends Controller
      */
     public function destroy($id)
     {
-        $post= News::find($id);
-        $path= public_path('/images');
-        foreach ($post->images as $image) {
+        $news= News::find($id);
+        $path= public_path('/images/');
+        foreach ($news->images as $image) {
             if($image->path && file_exists($path.$image->path)){
-                Storage::delete($path.$image->path);
-               // unlink($path.$category->image);
-            }
+                //Storage::delete($path.$image->path);
+                unlink($path.$image->path);
+               }
 
             $image->delete();
 
         }
 
-        $post->delete();
-        return response()->json('sucessfully saved',200);
+        $news->delete();
+        return response()->json('sucessfully deleted',200);
+
+    }
+
+    public function deleteImage($id){
+
+        $image=NewsImage::find($id);
+        $path= public_path('/images/');
+
+        if($image->path && file_exists($path.$image->path)){
+           // Storage::delete($path.$image->path);
+            unlink($path.$image->path);
+        }
+
+        $image->delete();
+        return response()->json('sucessfully deleted',200);
+
+    }
+
+    public function updateImage(Request $request){
+        $iu=new ImageUpload();
+       // return $request->all();
+        $upload= $iu->newsMultipleImageUpload($request->images,$request->news_id);
+        if (count($upload) > 0) {
+            return response()->json($upload,201);
+        }else{
+            return response()->json('error while uploading',401);
+
+        }
 
     }
 }

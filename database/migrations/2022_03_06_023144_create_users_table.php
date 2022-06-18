@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('email')->unique()->nullable();
             $table->text('word_of_support')->nullable();
+            $table->string('currency_code');
             $table->double('donation_amount');
-            $table->foreignId('donated_for')->constrained('zones','id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('donated_to')->constrained('zones','id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('is_visible')->default(1);
             $table->timestamps();
         });

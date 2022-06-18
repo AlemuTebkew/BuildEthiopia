@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class RegionController extends Controller
 {
+
+    public function __construct()
+    {
+
+        $this->middleware('auth:sanctum')->except('index');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -79,6 +85,11 @@ class RegionController extends Controller
      */
     public function destroy(Region $region)
     {
+        $zones=$region->zones;
+        foreach($zones as $zone){
+            $zone->institution_posts()->delete();
+        }
+        $region->zones()->delete();
         $region->delete();
         return response()->json('sucessfully deleted',200);
 

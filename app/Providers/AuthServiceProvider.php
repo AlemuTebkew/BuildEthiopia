@@ -29,10 +29,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
-        ResetPassword::createUrlUsing(function ($user, string $token) {
-            return 'https://example.com/reset-password?token='.$token;
-        });
+        // $this->registerPolicies();
+        // ResetPassword::createUrlUsing(function ($user, string $token) {
+        //     return 'https://example.com/reset-password?token='.$token;
+        // });
         // VerifyEmail::createUrlUsing(function ($notifiable) {
         //     $frontendUrl = env('FRONTEND_URL');
 
@@ -63,9 +63,10 @@ class AuthServiceProvider extends ServiceProvider
           //  $url= $frontendUrl . '/email-verification?verify_url=' . urlencode($verifyUrl);
           $url='http://10.161.178.167:80'.$verifyUrl;
           return (new MailMessage)
-                ->subject('Verify Email Address')
-                ->line('Click the button below to verify your email address.')
-                ->action('Verify Email Address', $url);
+            ->subject('BuildGeneration : Email Verification')
+            ->line('To validate your email click on the button below.')
+            ->action('Verify Email Address', $url)
+            ->line('Thank you for using our application!');
         });
     }
 }

@@ -15,14 +15,16 @@ class InstitutionPostResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'=>$this->id,
             'title'=>$this->title,
             'type'=>$this->type,
             'description'=>$this->description,
             'woreda'=>$this->woreda?? null,
             'kebele'=>$this->kebele?? null,
             'zone'=>$this->zone?? null,
-            'posted_by'=>$this->poster?? null,
-            'images'=>$this->images ?? null,
+            'region'=>$this->zone->region?? null,
+            'posted_by'=>$this->postedBy?? null,
+            'images'=> ImageResource::collection($this->images) ?? null,
         ];
     }
 }

@@ -44,10 +44,11 @@ class NewPasswordNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', $this->url)
-                    ->line('Thank you for using our application!')
-                    ->line($this->url);
+        ->subject('BuildGeneration : Password Reset')
+        ->line('To reset your password click on the button below.')
+        ->action('Reset Password', $this->url)
+        ->line('with regards')
+        ->line('u can copy paste this link in the browser '.$this->url);
     }
 
 

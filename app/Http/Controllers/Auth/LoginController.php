@@ -51,4 +51,36 @@ class LoginController extends Controller
             ],200);
 
         }
-}
+
+        public function changePassword(Request $request){
+
+            $request->validate([
+                'old_password'=>'required',
+                'new_password'=>'required',
+
+            ]);
+
+            $user=Admin::where('email',$request->user()->email)->first();
+            if (! $user ) {
+                return response()->json([
+                    'message'=>' incorrect credentials ',
+                    ]
+                   ,404 );
+            }
+
+            $check=Hash::check($request->old_password, $user->password);
+            if (! $check ) {
+                return response()->json([
+                    'message'=>' incorrect old password ',
+                    ]
+                   ,404 );
+            }
+
+            $user->password=Hash::make($request->new_password);
+            $user->save();
+            return response()->json([
+                'message'=>'Successfully  Reset',
+                ]
+               ,200 );
+        }
+  }

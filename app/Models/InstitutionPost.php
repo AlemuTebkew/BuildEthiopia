@@ -10,9 +10,11 @@ class InstitutionPost extends Model
     use HasFactory;
     protected $fillable=['title','type','description','woreda','kebele','zone_id','posted_by'];
 
-
+    protected $casts = [
+        'updated_at' => 'datetime',
+    ];
     public function postedBy(){
-        return $this->belongsTo(Admin::class);
+        return $this->belongsTo(Admin::class,'posted_by');
     }
 
     public function zone(){

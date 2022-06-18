@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 class ZoneController extends Controller
 {
+
+    public function __construct()
+    {
+
+        $this->middleware('auth:sanctum')->except('index');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -77,6 +83,7 @@ class ZoneController extends Controller
      */
     public function destroy(Zone $zone)
     {
+        $zone->institution_posts()->delete();
         $zone->delete();
         return response()->json('successfully deleted',200);
     }

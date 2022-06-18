@@ -38,7 +38,7 @@ class UserController extends Controller
         ]);
 
         $data=$request->all();
-        $data['role_id']=2;
+        $data['role_id']=1;
         $data['password']=Hash::make($request->last_name.'1234');
         $admin= Admin::create($data);
 
@@ -80,7 +80,7 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Admin $user)
     {
         $user->delete();
     }
